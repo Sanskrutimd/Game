@@ -1,0 +1,371 @@
+#include <iostream>
+using namespace std;
+
+//Constants
+const int BOARD_COL_SIZE = 7;
+const int BOARD_ROW_SIZE = 6;
+
+class ConnectFourBoard {
+public:
+
+    //initializes the board and constructs it
+    ConnectFourBoard()
+    {
+        for(int i = 0; i < 6; i++)
+        {
+            for(int j=0; j<7; j++)
+            {
+                grid[i][j] = ' ';
+            }
+        }
+    }
+
+    //prints the board
+    void print() {
+        cout << "Floating Connect Four Board" << endl;
+        cout << "  1 2 3 4 5 6 7" << endl;
+        for(int i = 0; i < 6; i++) {
+            cout << i+1;
+            for(int j = 0; j < 7; j++) {
+                cout << "|" << grid[i][j];
+            }
+            cout << "|" << endl;
+            cout << "  - - - - - - -" << endl;
+        }
+    }
+
+    //adds pieces 'r' or 'y' to the board
+    void addPiece(char side, int location, char player)
+    {
+        switch(side)
+        {
+        case 'l': 
+            for(int i = 0; i < 7; i++)
+                  {
+                      if(grid[location-1][i] == ' ')
+                      {
+                          if(i+1 >= 7)
+                          {
+                              grid[location-1][6] = player;
+                          }
+                          else if(grid[location-1][i+1] != ' ')
+                          {
+                              grid[location-1][i] = player;
+                          }
+                  }
+            }
+            break;
+
+        case 'r': 
+            for(int i = 6; i >= 0; i--)
+                  {
+                      if(grid[location-1][i] == ' ')
+                      {
+
+                          if((grid[location-1][i-1] != ' ') && (i > -1))
+                          {
+                              grid[location-1][i] = player;
+                          }
+                          else
+                          {
+                              grid[location-1][-1] = player;
+                          }
+                  }
+            }
+            break;
+
+        case 't':
+            for(int i = 0; i <= 6; i++)
+                  {
+                      if(grid[i][location-1] == ' ')
+                      {
+
+                          if((grid[i+1][location-1] != ' ') && (i < 6))
+                          {
+                              grid[i][location-1] = player;
+                          }
+                          else
+                          {
+                              grid[6][location-1] = player;
+                          }
+                  }
+            }
+            break;
+
+        case 'b':
+            for(int i = 5; i >= -1; i--)
+                  {
+                      if(grid[i][location-1] == ' ')
+                      {
+
+                          if((grid[i-1][location-1] != ' ') && (i > -1))
+                          {
+                              grid[i][location-1] = player;
+                          }
+                          else
+                          {
+                              grid[-1][location-1] = player;
+                          }
+                  }
+            }
+            break;
+
+        }
+    }
+
+    //enters r or y and whether it is valid
+    bool checkInput(char side, int location)
+    {
+        if(side != 't' && side != 'b' && side != 'r' && side != 'l')
+        {
+            return false;
+        }
+        else
+        {
+            if(side == 't' || side == 'b')
+            {
+                if(location < 1 || location > 7)
+                {
+                    return false;
+                }
+                else
+                {
+                    if(location < 1 || location > 6)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        if(side == 't')
+        {
+            if(grid[0][location-1] != ' ')
+            {
+                return false;
+            }
+        }
+        else if(side == 'b')
+        {
+            if(grid[5][location-1] != ' ')
+            { 
+                return false;
+            }
+        }
+        else if(side == 'l')
+        {
+            if(grid[location-1][0] != ' ')
+            {
+                return false;
+            }
+        }
+        else if(side == 'r')
+        {
+            if(grid[location-1][6] != ' ')
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //checks to see if there is a winner after each input
+    bool checkWinner(char player)
+    {
+        for(int i = 0; i < 6; i++)
+        {
+            for(int j = 0; j < 7; j++)
+            {
+                if(grid[i][j] == player)
+                {
+                    if(i-3 >= 0)
+                    {
+                        if((grid[i-1][j] == player) && (grid[i-2][j] == player) && (grid[i-3][j] == player))
+                        {
+                            return true;
+                        }
+                    }
+                    if(i+3 < 6)
+                    {
+                        if((grid[i+1][j] == player) && (grid[i+2][j] == player) && (grid[i+3][j] == player))
+                        {
+                            return true;
+                        }
+                    }
+                    if(j-3 >= 0)
+                    {
+                        if((grid[i][j-1] == player) && (grid[i][j-2] == player) && (grid[i][j-3] == player))
+                        {
+                            return true;
+                        }
+
+                    }
+                    if(j+3 < 7)
+                    {
+                        if((grid[i][j+1] == player) && (grid[i][j+2] == player) && (grid[i][j+3] == player))
+                        {
+                            return true;
+                        }
+                    }
+                    if((i-3 >= 0) && (j -3 >= 0))
+                    {
+                        if((grid[i-1][j-1] == player) && (grid[i-2][j-2] == player) && (grid[i-3][j-3] == player))
+                        {
+                            return true;
+                        }
+                    }
+                    if((i-3 >= 0) && (j + 3 < 7))
+                    {
+                        if((grid[i-1][j+1] == player) && (grid[i-2][j+2] == player) && (grid[i-3][j+3] == player))
+                        {
+                            return true;
+                        }
+                    }
+                    if((i+3 < 6) && (j+3 < 7))
+                    {
+                        if((grid[i+1][j+1] == player) && (grid[i+2][j+2] == player) && (grid[i+3][j+3] == player))
+                        {
+                            return true;
+                        }
+                    }
+                    if((i+3 < 6) && (j-3 > 0))
+                    {
+                        if((grid[i+1][j-1] == player) && (grid[i+2][j-2] == player) && (grid[i+3][j-3] == player))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    bool checkTie(char player)
+    {
+        for(int i = 0; i < 6; i++)
+        {
+            if(grid[i][0] == ' ')
+            {
+                return false;
+            }
+        }
+        for(int i = 0; i < 6; i++)
+        {
+            if(grid[i][6] == ' ')
+            {
+                return false;
+            }
+        }
+        for(int j = 0; j < 7; j++)
+        {
+            if(grid[0][j] == ' ')
+            {
+                return false;
+            }
+        }
+        for(int j = 0; j < 7; j++)
+        {
+            if(grid[6][j] == ' ')
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+private:
+
+    char grid[BOARD_ROW_SIZE][BOARD_COL_SIZE];
+};
+
+
+class Game {
+public:
+    void play();
+
+private:
+    void printHeader() {
+        cout << "Please enter a positive, non-zero integer for the number of pieces to connect" << endl;
+    }
+
+    void printPrompt() {
+        cout << "Enter side (t, b, l, r) and location (1 to 7): ";
+    }
+
+    void printError() {
+        cout << "Invalid location or side." << endl;
+    }
+
+    void printWinner(int player) {
+        cout << "Player " << player << " wins!" << endl;
+    }
+
+    void printTieGame() {
+        cout << "Tie game. No one wins." << endl;
+    }
+
+    ConnectFourBoard board;
+
+};
+
+void Game::play() 
+{
+    bool isGameOver = false;
+    char side;
+    int location;
+    while(isGameOver == false)
+    {
+        printHeader();
+        printPrompt();
+        cin >> side;
+        cin >> location;
+        while(board.checkInput(side, location) == false)
+        {
+            printError();
+            printPrompt();
+            cin >> side;
+            cin >> location;
+        }
+        if(board.checkWinner('r') == true)
+        {
+            printWinner(1);
+            isGameOver = true;
+        }
+        if(board.checkTie('r') == true)
+        {
+            printTieGame();
+            isGameOver = true;
+        }
+        board.addPiece(side, location, 'r');
+        board.print();
+        if(isGameOver == false)
+        {
+            printPrompt();
+            cin >> side;
+            cin >> location;
+            if(board.checkTie('y') == true)
+            {
+                printTieGame();
+                isGameOver = true;
+            }
+            if(board.checkWinner('y') == true)
+            {
+                printWinner(2);
+                isGameOver = true;
+            }
+            board.addPiece(side, location, 'y');
+            board.print();
+        }   
+    }
+}
+
+//main function that plays the game
+int main() {
+
+    Game myGame;
+    myGame.play();
+
+    return 0;
+}
